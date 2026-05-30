@@ -17,25 +17,24 @@ class BST {
         explicit Node(const T& val)
             : value(val), count(1), left(nullptr), right(nullptr) {}
     };
-
     Node* root;
 
     Node* insert(Node* node, const T& val) {
         if (!node) return new Node(val);
         if (val < node->value)
             node->left  = insert(node->left,  val);
-        else if (val > node->value)          
+        else if (val > node->value)
             node->right = insert(node->right, val);
         else
             node->count++;
         return node;
     }
 
-    Node* search(Node* node, const T& val) const {
-        if (!node || node->value == val) return node;  
+    Node* searchNode(Node* node, const T& val) const {
+        if (!node || node->value == val) return node;
         if (val < node->value)
-            return search(node->left,  val);
-        return search(node->right, val);
+            return searchNode(node->left,  val);
+        return searchNode(node->right, val);
     }
 
     int depth(Node* node) const {
@@ -44,7 +43,7 @@ class BST {
     }
 
     void inorder(Node* node, std::vector<Node*>& nodes) const {
-        if (!node) return;                
+        if (!node) return;
         inorder(node->left,  nodes);
         nodes.push_back(node);
         inorder(node->right, nodes);
@@ -57,26 +56,24 @@ class BST {
         delete node;
     }
 
- public:                                     
+ public:
     BST() : root(nullptr) {}
-
     ~BST() { clear(root); }
-
-   
     BST(const BST&)            = delete;
     BST& operator=(const BST&) = delete;
 
-    void insert(const T& val) {
-        root = insert(root, val);
-    }
+    void insert(const T& val) { root = insert(root, val); }
 
     bool search(const T& val) const {
-        return search(root, val) != nullptr;
+        return searchNode(root, val) != nullptr;
     }
 
-    int depth() const {
-        return depth(root);
+    int getCount(const T& val) const {
+        Node* nod = searchNode(root, val);
+        return nod ? nod->count : 0;
     }
+
+    int depth() const { return depth(root); }
 
     std::vector<std::pair<T, int>> getAllNodes() const {
         std::vector<Node*> nodes;
@@ -90,4 +87,5 @@ class BST {
 
     bool empty() const { return root == nullptr; }
 };
+
 #endif  // INCLUDE_BST_H_
