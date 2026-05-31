@@ -1,7 +1,7 @@
 // Copyright 2021 NNTU-CS
-#include "bst.h"
 #include <iostream>
 #include <string>
+#include "bst.h"
 
 void makeTree(BST<std::string>& tree, const char* filename);
 void printFreq(BST<std::string>& tree);
@@ -15,13 +15,13 @@ int main() {
 
     std::cout << "Tree depth: " << tree.depth() << "\n";
 
-    const std::string testWord = "war";     
+    const std::string testWord = "war";
     if (tree.search(testWord))
         std::cout << "'" << testWord << "' found in tree.\n";
     else
         std::cout << "'" << testWord << "' NOT found in tree.\n";
 
-    std::cout << "\nWord frequencies:\n";
+    std::cout << "Word frequencies:\n";
     printFreq(tree);
 
     return 0;
