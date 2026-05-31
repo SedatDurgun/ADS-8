@@ -69,7 +69,7 @@ public:
         root = insert(root, val);
     }
 
-    bool search(const T& val) const {
+    int search(const T& val) const {
         return searchNode(root, val) != nullptr;
     }
 
