@@ -12,15 +12,7 @@ int main() {
 
     std::cout << "Building tree from file: " << fName << "\n";
     makeTree(tree, fName);
-
     std::cout << "Tree depth: " << tree.depth() << "\n";
-
-    const std::string testWord = "war";
-    if (tree.search(testWord))
-        std::cout << "'" << testWord << "' found in tree.\n";
-    else
-        std::cout << "'" << testWord << "' NOT found in tree.\n";
-
     std::cout << "Word frequencies:\n";
     printFreq(tree);
 
