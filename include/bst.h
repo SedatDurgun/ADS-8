@@ -70,7 +70,8 @@ public:
     }
 
     int search(const T& val) const {
-        return searchNode(root, val) != nullptr;
+        Node* nod = searchNode(root, val);
+        return nod ? nod->count : 0;        
     }
 
     int getCount(const T& val) const {
