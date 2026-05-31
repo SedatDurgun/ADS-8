@@ -1,53 +1,82 @@
 // Copyright 2021 NNTU-CS
+#ifndef INCLUDE_BST_H_
+#define INCLUDE_BST_H_
 #include <algorithm>
-#include <cctype>
-#include <fstream>
-#include <iostream>
 #include <string>
-#include <utility>
 #include <vector>
-#include "bst.h"
-void makeTree(BST<std::string>& tree, const char* filename) {
-    std::ifstream file(filename);
-    if (!file) {
-        std::cout << "File error!" << std::endl;
-        return;
-    }
-    std::string word;
-    int chr;
-    while ((chr = file.get()) != EOF) {
-        if ((chr >= 'a' && chr <= 'z') || (chr >= 'A' && chr <= 'Z')) {
-            if (chr >= 'A' && chr <= 'Z')
-                chr = chr + ('a' - 'A');
-            word += static_cast<char>(chr);
-        } else {
-            if (!word.empty()) {
-                tree.insert(word);
-                word.clear();
-            }
+template <typename T>
+class BST {
+ private:
+    struct Node {
+        T value;
+        int count;
+        Node* left;
+        Node* right;
+        explicit Node(const T& val)
+            : value(val), count(1), left(nullptr), right(nullptr) {
         }
+    };
+    Node* root;
+    Node* insert(Node* node, const T& val) {
+        if (!node) return new Node(val);
+        if (val < node->value)
+            node->left = insert(node->left, val);
+        else if (val > node->value)
+            node->right = insert(node->right, val);
+        else
+            node->count++;
+        return node;
     }
-    if (!word.empty())
-        tree.insert(word);
-    file.close();
-}
-void printFreq(BST<std::string>& tree) {
-    auto nodes = tree.getAllNodes();
-    std::sort(nodes.begin(), nodes.end(),
-        [](const std::pair<std::string, int>& x,
-           const std::pair<std::string, int>& y) {
-            if (x.second != y.second)
-                return x.second > y.second;
-            return x.first < y.first;
-        });
-    std::ofstream outFile("result/freq.txt");
-    if (!outFile) {
-        std::cout << "Error creating result/freq.txt!" << std::endl;
-        return;
+    Node* searchNode(Node* node, const T& val) const {
+        if (!node || node->value == val) return node;
+        if (val < node->value)
+            return searchNode(node->left, val);
+        return searchNode(node->right, val);
     }
-    for (const auto& node : nodes) {
-        std::cout << node.first << " " << node.second << "\n";
-        outFile   << node.first << " " << node.second << "\n";
+    int depth(Node* node) const {
+        if (!node) return -1;
+        return 1 + std::max(depth(node->left), depth(node->right));
     }
-    outFile.close();
-}
+    void inorder(Node* node, std::vector<Node*>& nodes) const {
+        if (!node) return;
+        inorder(node->left, nodes);
+        nodes.push_back(node);
+        inorder(node->right, nodes);
+    }
+    void clear(Node* node) {
+        if (!node) return;
+        clear(node->left);
+        clear(node->right);
+        delete node;
+    }
+ public:
+    BST() : root(nullptr) {}
+    ~BST() { clear(root); }
+    BST(const BST&) = delete;
+    BST& operator=(const BST&) = delete;
+    void insert(const T& val) {
+        root = insert(root, val);
+    }
+    int search(const T& val) const {
+        Node* nod = searchNode(root, val);
+        return nod ? nod->count : 0;
+    }
+    int getCount(const T& val) const {
+        Node* nod = searchNode(root, val);
+        return nod ? nod->count : 0;
+    }
+    int depth() const {
+        return depth(root);
+    }
+    std::vector<std::pair<T, int>> getAllNodes() const {
+        std::vector<Node*> nodes;
+        inorder(root, nodes);
+        std::vector<std::pair<T, int>> res;
+        res.reserve(nodes.size());
+        for (Node* n : nodes)
+            res.emplace_back(n->value, n->count);
+        return res;
+    }
+    bool empty() const { return root == nullptr; }
+};
+#endif  // INCLUDE_BST_H_
